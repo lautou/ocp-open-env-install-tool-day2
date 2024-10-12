@@ -1,6 +1,8 @@
 apiVersion: nfd.openshift.io/v1
 kind: NodeFeatureDiscovery
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: '1'
   name: nfd-instance
   namespace: openshift-nfd
 spec:
