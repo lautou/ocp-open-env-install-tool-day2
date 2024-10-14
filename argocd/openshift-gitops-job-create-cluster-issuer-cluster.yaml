@@ -4,12 +4,12 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: Force=true
     argocd.argoproj.io/sync-wave: '1'
-  name: create-cert-manager-secret-aws-acme
+  name: create-cluster-issuer-cluster
   namespace: openshift-gitops
 spec:
   template:
     metadata:
-      name: create-cert-manager-secret-aws-acme
+      name: create-cluster-issuer-cluster
     spec:
       initContainers:
         - name: create-cert-manager-secret-aws-acme-and-extract-install-config
@@ -30,7 +30,6 @@ spec:
           volumeMounts:
           - name: shared-data
             mountPath: /data
-      containers:
         - name: extract-region
           image: quay.io/multi-arch/yq:4.35.2
           command:
@@ -41,7 +40,18 @@ spec:
             export REGION=$(yq e '.platform.aws.region' /data/install-config)
             echo REGION=$REGION
             yq e '.spec.acme.solvers[0].dns01.route53.region |= strenv(REGION)' -i /data/cluster-clusterissuer-cluster.yaml
-            cat /data/cluster-clusterissuer-cluster.yaml
+          volumeMounts:
+          - name: shared-data
+            mountPath: /data
+      containers:
+        - name: create-cluster-issuer-cluster
+          image: registry.redhat.io/openshift4/ose-cli:latest
+          command:
+            - /bin/bash
+            - '-c'
+            - |
+              echo "Create the ClusterIssuer resources"
+              oc apply -f /data/cluster-clusterissuer-cluster.yaml
           volumeMounts:
           - name: shared-data
             mountPath: /data
