@@ -24,6 +24,7 @@ spec:
               echo "Update ingress controller config"
               oc extract cm/openshift-ingress-operator-ingresscontroller-default --keys openshift-ingress-operator-ingresscontroller-default.yaml --to /data -n openshift-gitops
               cat /data/openshift-ingress-operator-ingresscontroller-default.yaml
+              echo
               oc apply -f /data/openshift-ingress-operator-ingresscontroller-default.yaml
           volumeMounts:
           - name: shared-data
