@@ -5,6 +5,12 @@ metadata:
   namespace: nvidia-gpu-operator
 spec:
   channel: stable
+  config:
+    nodeSelector:
+      node-role.kubernetes.io/infra: ''
+    tolerations:
+      - key: node-role.kubernetes.io/infra
+        operator: Exists
   name: gpu-operator-certified
   source: certified-operators
   sourceNamespace: openshift-marketplace
