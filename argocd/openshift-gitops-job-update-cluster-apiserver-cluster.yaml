@@ -51,7 +51,7 @@ spec:
               echo "Update api config"
               cat /data/cluster-apiserver-cluster.yaml
               echo
-              # oc apply -f /data/cluster-apiserver-cluster.yaml
+              oc apply -f /data/cluster-apiserver-cluster.yaml
           volumeMounts:
           - name: shared-data
             mountPath: /data
