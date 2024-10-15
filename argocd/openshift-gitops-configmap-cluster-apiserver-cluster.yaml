@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: cluster-api-default
+  name: cluster-apiserver-cluster
   namespace: openshift-gitops
 data:
   cluster-apiserver-cluster.yaml: |-
