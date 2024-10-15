@@ -15,7 +15,7 @@ spec:
         - name: extract-resources-to-create
           image: registry.redhat.io/openshift4/ose-cli:latest
           command:
-            - /bin/bas
+            - /bin/bash
             - '-c'
             - |
               echo "Read the secret for AWS cloud provider"
