@@ -12,11 +12,11 @@ data:
       namespace: openshift-ingress
     spec:
       isCA: false
-      commonName: "apps.CLUSTER_BASE_DOMAIN" 
+      commonName: "DOMAIN" 
       secretName: ingress-certificates 
       dnsNames:
-      - "apps.CLUSTER_BASE_DOMAIN" 
-      - "*.apps.CLUSTER_BASE_DOMAIN" 
+      - "DOMAIN" 
+      - "*.DOMAIN" 
     issuerRef:
       name: cluster 
       kind: ClusterIssuer
