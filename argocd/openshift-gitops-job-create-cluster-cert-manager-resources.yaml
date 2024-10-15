@@ -26,9 +26,10 @@ spec:
               oc delete secret generic aws-acme -n cert-manager --ignore-not-found
               oc create secret generic aws-acme -n cert-manager --from-literal awsAccessKey=$ACCESS_KEY --from-literal awsSecretAccessKey=$SECRET_KEY
               oc extract cm/cluster-config-v1 --keys install-config --to /data -n kube-system
+              oc get ingress.config.openshift.io cluster -o yaml > /data/ingress-cluster.yaml
               oc extract cm/clusterissuer-cluster --keys cluster-clusterissuer-cluster.yaml --to /data -n openshift-gitops
               oc extract cm/openshift-ingress-certificate-ingress --keys openshift-ingress-certificate-ingress.yaml --to /data -n openshift-gitops
-              oc get ingress.config.openshift.io cluster -o yaml > /data/ingress-cluster.yaml
+              oc extract cm/openshift-config-certificate-api --keys openshift-config-certificate-api.yaml --to /data -n openshift-gitops
           volumeMounts:
           - name: shared-data
             mountPath: /data
@@ -47,6 +48,8 @@ spec:
             yq e '.spec.commonName |= strenv(DOMAIN)' -i /data/openshift-ingress-certificate-ingress.yaml
             yq e '.spec.dnsNames[0] |= strenv(DOMAIN)' -i /data/openshift-ingress-certificate-ingress.yaml
             yq e '.spec.dnsNames[1] |= "*." + strenv(DOMAIN)' -i /data/openshift-ingress-certificate-ingress.yaml
+            yq e '.spec.commonName |= "api." + strenv(DOMAIN)' -i /data/openshift-config-certificate-api.yaml
+            yq e '.spec.dnsNames[0] |= "api." + strenv(DOMAIN)' -i /data/openshift-config-certificate-api.yaml
           volumeMounts:
           - name: shared-data
             mountPath: /data
@@ -61,6 +64,8 @@ spec:
               oc apply -f /data/cluster-clusterissuer-cluster.yaml
               echo "Create the Certificate resource for Ingress"
               oc apply -f /data/openshift-ingress-certificate-ingress.yaml
+              echo "Create the Certificate resource for API"
+              oc apply -f /data/openshift-config-certificate-api.yaml
           volumeMounts:
           - name: shared-data
             mountPath: /data
