@@ -28,7 +28,7 @@ spec:
               oc extract cm/cluster-config-v1 --keys install-config --to /data -n kube-system
               oc extract cm/clusterissuer-cluster --keys cluster-clusterissuer-cluster.yaml --to /data -n openshift-gitops
               oc extract cm/openshift-ingress-certificate-ingress --keys openshift-ingress-certificate-ingress.yaml --to /data -n openshift-gitops
-              oc get ingress cluster -o yaml > /data/ingress-cluster.yaml
+              oc get ingress.config.openshift.io cluster -o yaml > /data/ingress-cluster.yaml
           volumeMounts:
           - name: shared-data
             mountPath: /data
