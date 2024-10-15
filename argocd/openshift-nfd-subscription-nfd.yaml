@@ -5,6 +5,12 @@ metadata:
   namespace: openshift-nfd
 spec:
   channel: "stable"
+  config:
+    nodeSelector:
+      node-role.kubernetes.io/infra: ''
+    tolerations:
+      - key: node-role.kubernetes.io/infra
+        operator: Exists
   name: nfd
   source: redhat-operators
   sourceNamespace: openshift-marketplace
