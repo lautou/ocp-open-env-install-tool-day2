@@ -8,8 +8,8 @@ data:
     apiVersion: operator.openshift.io/v1
     kind: IngressController
     metadata:
-      name: ingress
-      namespace: openshift-ingress
+      name: default
+      namespace: openshift-ingress-operator
     spec:
       defaultCertificate:
         name: ingress-certificates
