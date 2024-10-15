@@ -8,15 +8,15 @@ data:
     apiVersion: cert-manager.io/v1
     kind: Certificate
     metadata:
-      name: ingress 
+      name: ingress
       namespace: openshift-ingress
     spec:
       isCA: false
-      commonName: "DOMAIN" 
-      secretName: ingress-certificates 
+      commonName: "DOMAIN"
+      secretName: ingress-certificates
       dnsNames:
-      - "DOMAIN" 
-      - "*.DOMAIN" 
-    issuerRef:
-      name: cluster 
-      kind: ClusterIssuer
+      - "DOMAIN"
+      - "*.DOMAIN"
+      issuerRef:
+        name: cluster
+        kind: ClusterIssuer
