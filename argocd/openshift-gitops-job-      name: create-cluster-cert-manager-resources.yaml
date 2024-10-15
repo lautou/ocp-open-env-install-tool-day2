@@ -4,18 +4,18 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: Force=true
     argocd.argoproj.io/sync-wave: '1'
-  name: create-cluster-issuer-cluster
+  name: create-cluster-cert-manager-resources
   namespace: openshift-gitops
 spec:
   template:
     metadata:
-      name: create-cluster-issuer-cluster
+      name: create-cluster-cert-manager-resources
     spec:
       initContainers:
-        - name: create-cert-manager-secret-aws-acme-and-extract-install-config
+        - name: extract-resources-to-create
           image: registry.redhat.io/openshift4/ose-cli:latest
           command:
-            - /bin/bash
+            - /bin/bas
             - '-c'
             - |
               echo "Read the secret for AWS cloud provider"
@@ -27,10 +27,12 @@ spec:
               oc create secret generic aws-acme -n cert-manager --from-literal awsAccessKey=$ACCESS_KEY --from-literal awsSecretAccessKey=$SECRET_KEY
               oc extract cm/cluster-config-v1 --keys install-config --to /data -n kube-system
               oc extract cm/clusterissuer-cluster --keys cluster-clusterissuer-cluster.yaml --to /data -n openshift-gitops
+              oc extract cm/openshift-ingress-certificate-ingress --keys openshift-ingress-certificate-ingress.yaml --to /data -n openshift-gitops
+              oc get ingress cluster -o yaml > /data/ingress-cluster.yaml
           volumeMounts:
           - name: shared-data
             mountPath: /data
-        - name: extract-region
+        - name: extract-config-data
           image: quay.io/multi-arch/yq:4.35.2
           command:
           - /bin/sh
@@ -40,18 +42,25 @@ spec:
             export REGION=$(yq e '.platform.aws.region' /data/install-config)
             echo REGION=$REGION
             yq e '.spec.acme.solvers[0].dns01.route53.region |= strenv(REGION)' -i /data/cluster-clusterissuer-cluster.yaml
+            export DOMAIN=$(yq e '.spec.domain' /data/ingress-cluster.yaml)
+            echo DOMAIN=$DOMAIN
+            yq e '.spec.commonName |= strenv(DOMAIN)' -i /data/openshift-ingress-certificate-ingress.yaml
+            yq e '.spec.dnsNames[0] |= strenv(DOMAIN)' -i /data/openshift-ingress-certificate-ingress.yaml
+            yq e '.spec.dnsNames[1] |= "*." + strenv(DOMAIN)' -i /data/openshift-ingress-certificate-ingress.yaml
           volumeMounts:
           - name: shared-data
             mountPath: /data
       containers:
-        - name: create-cluster-issuer-cluster
+        - name: create-cluster-cert-manager-resources
           image: registry.redhat.io/openshift4/ose-cli:latest
           command:
             - /bin/bash
             - '-c'
             - |
-              echo "Create the ClusterIssuer resources"
+              echo "Create the ClusterIssuer resource"
               oc apply -f /data/cluster-clusterissuer-cluster.yaml
+              echo "Create the Certificate resource for Ingress"
+              oc apply -f /data/openshift-ingress-certificate-ingress.yaml
           volumeMounts:
           - name: shared-data
             mountPath: /data
