@@ -1,0 +1,19 @@
+﻿apiVersion: shipwright.io/v1beta1
+kind: Build
+metadata:
+  name: single-serve-runtimes
+  namespace: redhat-saia
+spec:
+  output:
+    image: image-registry.openshift-image-registry.svc:5000/redhat-saia/ollama-model-serve-multi:latest
+  paramValues:
+    - name: container/single-serve/dockerfile
+      value: Containerfile
+  source:
+    git:
+      cloneSecret: secret-git-basic-auth
+      url: 'https://gitlab.consulting.redhat.com/redprojectai/infrastructure/data-science-deploy.git'
+    type: git
+  strategy:
+    kind: ClusterBuildStrategy
+    name: buildah
