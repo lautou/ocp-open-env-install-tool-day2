@@ -12,3 +12,4 @@ spec:
     - netobserv-plugin
     - odf-client-console
     - odf-console
+    - pipelines-console-plugin
