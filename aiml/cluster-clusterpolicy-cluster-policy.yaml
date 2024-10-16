@@ -4,4 +4,24 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
   name: cluster-policy
-spec: {}
+spec:
+  daemonsets:
+    updateStrategy: RollingUpdate
+  dcgmExporter:
+    enabled: true
+  dcgm:
+    enabled: true
+  devicePlugin:
+    enabled: true
+  driver:
+    enabled: true
+  gfd:
+    enabled: true
+  migManager:
+    enabled: true
+  nodeStatusExporter:
+    enabled: true
+  operator:
+    defaultRuntime: crio
+  toolkit:
+    enabled: true
